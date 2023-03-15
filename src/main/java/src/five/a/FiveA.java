@@ -1,7 +1,5 @@
 package src.five.a;
 
-import java.util.Arrays;
-
 /**
  * @author ogbozoyan
  * @date 06.03.2023
@@ -9,9 +7,9 @@ import java.util.Arrays;
 //        – поиск в глубину; DONE
 //        – поиск в ширину; Done
 //        – алгоритм Дейкстры; Done
-//        – алгоритм Крускала;
+//        – алгоритм Крускала; Done
 //        – алгоритм Прима; Done
-//        – алгоритм Флойда-Уоршалла;
+//        – алгоритм Флойда-Уоршалла; Done
 public class FiveA {
     public static void main(String[] args) {
         Graph graph = new Graph(20);
@@ -30,33 +28,35 @@ public class FiveA {
         System.out.println("Поиск в глубину");
         graph.DFS();
         System.out.println(" ");
-        //DjGraph
-        DjGraph djGraph = new DjGraph();
-        djGraph.addVertex('0');
-        djGraph.addVertex('1');
-        djGraph.addVertex('2');
-        djGraph.addVertex('3');
-        djGraph.addVertex('4');
-        djGraph.addEdge(0, 1, 50);
-        djGraph.addEdge(2, 4, 60);
-        djGraph.addEdge(2, 3, 90);
-        djGraph.addEdge(3, 1, 20);
-        System.out.println(Arrays.deepToString(djGraph.getAdjMat()));
-        System.out.println("Алгоритм Дейкстры");
-        djGraph.path();
-        System.out.println();
-
-        Integer[][] graphPrim = new Integer[][] {
-                {0, 2, 0, 6, 0},
+        //DjGraph не должен содержать нулевой путь кроме главной diag
+        Integer inf = 99999;
+        Integer[][] graphDj = new Integer[][] {
+                {0, 2, 1, 6, 1},
                 {2, 0, 3, 8, 5},
-                {0, 3, 0, 0, 7},
-                {6, 8, 0, 0, 9},
-                {0, 5, 7, 9, 0}
+                {1, 3, 0, 1, 7},
+                {2, 8, 1, 0, 9},
+                {1, 5, 7, 4, 0}
         };
+        DjGraph djGraph = new DjGraph(
+                graphDj
+        );
+        djGraph.djAlg(djGraph.getGraph(),1-1);
+        System.out.println("Крускало: ");
+        djGraph.kruskAlg();
+        System.out.println("Прима: ");
+        djGraph.primAlg();
+        System.out.println("Floyd");
+        Integer[][] graphFloyd =  {
+                {0, inf, 1, 6, 1},
+                {2, 0, inf, 8, 5},
+                {1, 3, 0, 1, inf},
+                {inf,inf, inf, inf, inf},
+                {1, 5, 7, inf, 0}
+        };
+        DjGraph flGraph = new DjGraph(
+                graphFloyd
+        );
+        flGraph.floydWarshall();
 
-        PrimAlg primAlg = new PrimAlg(
-                graphPrim,4
-                );
-        primAlg.primMST();
     }
 }

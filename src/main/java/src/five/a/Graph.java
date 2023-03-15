@@ -3,12 +3,15 @@ package src.five.a;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Objects;
+
 @Data
 @NoArgsConstructor
 public class Graph {
+    private final Integer INF = Integer.MAX_VALUE - 1010010;
     private Integer MAX_VERTS;
     private Vertex[] vertexList;
-    private int[][] adjMat;      // Матрица смежности
+    private Integer[][] adjMat;      // Матрица смежности
     private Integer countVerts;
     private Stack stack;
     private Queue queue;
@@ -17,7 +20,7 @@ public class Graph {
         MAX_VERTS = max;
         vertexList = new Vertex[MAX_VERTS];
         // Матрица смежности
-        adjMat = new int[MAX_VERTS][MAX_VERTS];
+        adjMat = new Integer[MAX_VERTS][MAX_VERTS];
         countVerts = 0;
         for (int j = 0; j < MAX_VERTS; j++)      // Матрица смежности
             for (int k = 0; k < MAX_VERTS; k++)   // заполняется нулями
@@ -41,7 +44,7 @@ public class Graph {
 
     private int getAdjUnvisitedVertex(int v) {
         for (int j = 0; j < countVerts; j++)
-            if (adjMat[v][j] == 1 && vertexList[j].isWasVisited() == false)
+            if (adjMat[v][j] == 1 && !vertexList[j].isWasVisited())
                 return j;               // Возвращает первую найденную вершину
         return -1;                    // Таких вершин нет
     }

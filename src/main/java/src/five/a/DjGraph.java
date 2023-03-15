@@ -3,169 +3,233 @@ package src.five.a;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Objects;
-
-import static java.lang.Math.min;
-import static java.util.Arrays.fill;
 
 /**
  * @author ogbozoyan
  * @date 15.03.2023
  */
 @Data
+@NoArgsConstructor
 public class DjGraph {
-    private final Integer MAX_VERTS = 20;
-    private final Integer INFINITY = Integer.MAX_VALUE - 1000;
-    private DjVertex[] vertexList;
-    private Integer[][] adjMat;
-    private Integer nVerts;
-    private Integer nTree;
-    private DistPar[] sPath;
-    private Integer currentVert;
-    private Integer startToCurrent;
+    private Integer[][] graph;
+    private final Integer INF = 99999;
+    private Integer vertCount;
+    private List<Edge> graphEdges;
 
-    public DjGraph() {
-        vertexList = new DjVertex[MAX_VERTS];
-        // Матрица смежности
-        adjMat = new Integer[MAX_VERTS][MAX_VERTS];
-        nVerts = 0;
-        nTree = 0;
-        for (Integer j = 0; j < MAX_VERTS; j++) {    // Матрица смежности
-            for (Integer k = 0; k < MAX_VERTS; k++) {
-                adjMat[j][k] = INFINITY;
+    public DjGraph(Integer[][] graph) {
+        this.graph = graph;
+        this.vertCount = graph.length;
+        graphEdges = new ArrayList<>();
+        for (int i = 0; i < vertCount; i++) {
+            for (int j = 0; j < vertCount; j++) {
+                graphEdges.add(new Edge(i, j, graph[i][j]));
             }
         }
-        sPath = new DistPar[MAX_VERTS];
+        graphEdges.sort(Comparator.comparingInt(Edge::getWeight));
     }
 
-    public void addVertex(Character lab) {
-        vertexList[nVerts++] = new DjVertex(lab);
-    }
+    public void djAlg(Integer[][] graph, int src) {
+        Integer[] distance = new Integer[vertCount];
+        Boolean[] isVisited = new Boolean[vertCount];
 
-    public void addEdge(Integer start, Integer end, Integer weight) {
-        adjMat[start][end] = weight;
-    }
-
-    public void path() {
-        Integer startTree = 0;
-        vertexList[startTree].setInTree(true);
-        nTree = 1;
-        for (Integer j = 0; j < nVerts; j++) {
-            Integer tempDist = adjMat[startTree][j];
-            sPath[j] = new DistPar(startTree, tempDist);
+        for (int i = 0; i < vertCount; i++) {
+            distance[i] = INF;
+            isVisited[i] = false;
         }
-        while (nTree < nVerts) {
-            Integer indexMin = getMin();
-            Integer minDist = sPath[indexMin].getDistance();
-            if (Objects.equals(minDist, INFINITY)) {
-                System.out.println("Недостежимые вершины");
-                break;
-            } else {                        // Возврат currentVert
-                currentVert = indexMin;  // к ближайшей вершине
-                startToCurrent = sPath[indexMin].getDistance();
-                // Минимальное расстояние от startTree
-                // до currentVert равно startToCurrent
+
+        distance[src] = 0;
+
+        for (int count = 0; count < vertCount - 1; count++) {
+            int u = minDistance(distance, isVisited);
+
+            isVisited[u] = true;
+
+            for (int v = 0; v < vertCount; v++)
+                if (!isVisited[v] && graph[u][v] != 0
+                        && !Objects.equals(distance[u], INF)
+                        && distance[u] + graph[u][v] < distance[v])
+                    distance[v] = distance[u] + graph[u][v];
+        }
+
+        outputRes(distance);
+    }
+
+    private void outputRes(Integer[] dist) {
+        System.out.println(
+                "Вершина \t\t Расстояние от начала");
+        for (int i = 0; i < vertCount; i++)
+            System.out.println(i + 1 + " \t\t " + dist[i]);
+    }
+
+    private int minDistance(Integer[] dist, Boolean[] isVisited) {
+        int min = Integer.MAX_VALUE, minIndex = -1;
+
+        for (int v = 0; v < vertCount; v++)
+            if (!isVisited[v] && dist[v] <= min) {
+                min = dist[v];
+                minIndex = v;
             }
-            vertexList[currentVert].setInTree(true);
-            nTree++;
-            adjust_sPath();
-        }
-        displayPaths();
-        nTree = 0;
-        for (Integer j = 0; j < nVerts; j++)
-            vertexList[j].setInTree(false);
+        return minIndex;
     }
 
-    public Integer getMin() {
-        Integer minDist = Integer.MAX_VALUE;
-        Integer indexMin = 0;
-        for (Integer j = 1; j < nVerts; j++) {
-            if (!vertexList[j].isInTree() &&
-                    sPath[j].getDistance() < minDist)
-                minDist = sPath[j].getDistance();
-            {
-                indexMin = j;
+    public void kruskAlg() {
+        int j = 0;
+        int noOfEdges = 0;
+        Subset[] subsets = new Subset[vertCount];
+
+        Edge[] res = new Edge[vertCount];
+
+        for (int i = 0; i < vertCount; i++) {
+            subsets[i] = new Subset(i, 0);
+        }
+
+        while (noOfEdges < vertCount - 1) {
+            Edge nextEdge = graphEdges.get(j);
+            Integer x = findRoot(subsets, nextEdge.getSrc());
+            Integer y = findRoot(subsets, nextEdge.getDest());
+
+            if (!x.equals(y)) {
+                res[noOfEdges] = nextEdge;
+                union(subsets, x, y);
+                noOfEdges++;
+            }
+            j++;
+        }
+        Integer minSize = 0;
+        for (int i = 0; i < noOfEdges; i++) {
+            System.out.println(res[i].getSrc() + " - " + res[i].getDest() + ": " + res[i].getWeight());
+            minSize += res[i].getWeight();
+        }
+
+    }
+
+    private void union(Subset[] subsets, Integer x, Integer y) {
+        int rootX = findRoot(subsets, x);
+        int rootY = findRoot(subsets, y);
+
+        if (subsets[rootY].getRank() < subsets[rootX].getRank()) {
+            subsets[rootY].setParent(rootX);
+        } else if (subsets[rootX].getRank() < subsets[rootY].getRank()) {
+            subsets[rootX].setParent(rootY);
+        } else {
+            subsets[rootY].setParent(rootX);
+            Integer temp = subsets[rootX].getRank();
+            temp++;
+            subsets[rootX].setRank(temp);
+        }
+    }
+
+    private int findRoot(Subset[] subsets, int i) {
+        if (subsets[i].getParent() == i)
+            return subsets[i].getParent();
+
+        subsets[i].setParent(findRoot(subsets, subsets[i].getParent()));
+        return subsets[i].getParent();
+    }
+
+    public void primAlg() {
+
+        Integer[] parent = new Integer[vertCount];
+
+        Integer[] key = new Integer[vertCount];
+
+        Boolean[] isVisited = new Boolean[vertCount];
+
+        for (int i = 0; i < vertCount; i++) {
+            key[i] = INF;
+            isVisited[i] = false;
+        }
+
+        key[0] = 0;
+
+        parent[0] = -1;
+
+        for (int count = 0; count < vertCount - 1; count++) {
+
+            Integer u = minKey(key, isVisited);
+
+            isVisited[u] = true;
+
+            for (int v = 0; v < vertCount; v++)
+
+                if (graph[u][v] != 0 && !isVisited[v]
+                        && graph[u][v] < key[v]) {
+                    parent[v] = u;
+                    key[v] = graph[u][v];
+                }
+        }
+        for (int i = 1; i < vertCount; i++)
+            System.out.println(parent[i] + " - " + i + "\t"
+                    + graph[i][parent[i]]);
+    }
+    int minKey(Integer[] key, Boolean[] mstSet)
+    {
+        // Initialize min value
+        Integer min = INF, minIndex = -1;
+
+        for (int v = 0; v < vertCount; v++)
+            if (!mstSet[v] && key[v] < min) {
+                min = key[v];
+                minIndex = v;
+            }
+
+        return minIndex;
+    }
+    public void floydWarshall()
+    {
+        Integer i, j, k;
+        for (k = 0; k < vertCount; k++) {
+            for (i = 0; i < vertCount; i++) {
+                for (j = 0; j < vertCount; j++) {
+                    if (graph[i][k] + graph[k][j]
+                            < graph[i][j])
+                        graph[i][j]
+                                = graph[i][k] + graph[k][j];
+                }
             }
         }
-        return indexMin;
+        printSolution(graph);
     }
 
-    public void adjust_sPath() {
-        // Обновление данных в массиве кратчайших путей sPath
-        Integer column = 1;                // Начальная вершина пропускается
-        while (column < nVerts)         // Перебор столбцов
-        {
-            // Если вершина column уже включена в дерево, она пропускается
-            if (vertexList[column].isInTree()) {
-                column++;
-                continue;
+    private void printSolution(Integer[][] dist)
+    {
+        System.out.println("Кратчайшие пути между парами вершин");
+        for (int i = 0; i < vertCount; ++i) {
+            for (int j = 0; j < vertCount; ++j) {
+                if (Objects.equals(dist[i][j], INF))
+                    System.out.print("INF ");
+                else
+                    System.out.print(dist[i][j] + "   ");
             }
-            // Вычисление расстояния для одного элемента sPath
-            // Получение ребра от currentVert к column
-            Integer currentToFringe = adjMat[currentVert][column];
-            // Суммирование расстояний
-            Integer startToFringe = startToCurrent + currentToFringe;
-            // Определение расстояния текущего элемента sPath
-            Integer sPathDist = sPath[column].getDistance();
-            // Сравнение расстояния от начальной вершины с элементом sPath
-            if (startToFringe < sPathDist)   // Если меньше,
-            {                            // данные sPath обновляются
-                sPath[column].setParentVert(currentVert);
-                sPath[column].setDistance(startToFringe);
-            }
-            column++;
+            System.out.println();
         }
     }
-
-    public void displayPaths() {
-        for (Integer j = 0; j < nVerts; j++) // display contents of sPath[]
-        {
-            System.out.print(vertexList[j].getName() + "=");
-            if (Objects.equals(sPath[j].getDistance(), INFINITY))
-                System.out.print("inf");
-            else
-                System.out.print(sPath[j].getDistance());
-            char parent = vertexList[sPath[j].getParentVert()].getName();
-            System.out.print("(" + parent + ") ");
-        }
-        System.out.println("");
-    }
-
-    public Integer[][] floydWarshall() {
-        Integer[][] dist = new Integer[nVerts][nVerts]; // dist[i][j] = минимальное_расстояние(i, j)
-        for (int i = 0; i < nVerts; i++) System.arraycopy(adjMat[i], 0, dist[i], 0, nVerts);
-        for (int k = 0; k < nVerts; k++)
-            for (int i = 0; i < nVerts; i++)
-                for (int j = 0; j < nVerts; j++)
-                    dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j]);
-        return dist;
-    }
-
 
 }
 
 @Data
 @NoArgsConstructor
-class DjVertex {
-    private Character name;
-    private boolean isInTree;
+class Edge {
+    private Integer src, dest, weight;
 
-    public DjVertex(Character lab) {
-        name = lab;
-        isInTree = false;
+    public Edge(Integer src, Integer dest, Integer weight) {
+        this.src = src;
+        this.dest = dest;
+        this.weight = weight;
     }
-
 }
 
 @Data
 @NoArgsConstructor
-class DistPar {
-    // Класс хранит растояния между точками
-    private Integer distance;
-    private Integer parentVert;
+class Subset {
+    private Integer parent, rank;
 
-    public DistPar(Integer pv, Integer d) {
-        distance = d;
-        parentVert = pv;
+    public Subset(Integer parent, Integer rank) {
+        this.parent = parent;
+        this.rank = rank;
     }
 }
