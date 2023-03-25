@@ -7,13 +7,16 @@ package src.fourth;
 /*
 Задача: реализовать ассоциативный массив (контейнер hash_map) на основе хеш-таблицы
 с разрешением коллизий по методу цепочек.
-Рассматриваемые вопросы:
-– хеш-функции и хеш-таблицы;
-– методы разрешения коллизий;
-– амортизационные оценки сложности;
+GET  | Done
+PUT   | Done
+DELETE   | Done
  */
 public class FourthLab {
     public static void main(String[] args) {
-
+        MyHashMap<Integer,String> hashMap = new MyHashMap<>();
+        hashMap.put(1,"1");
+        hashMap.get(1);
+        hashMap.remove(1);
+        hashMap.getNodeCount(0);
     }
 }
