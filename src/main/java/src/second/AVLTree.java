@@ -32,7 +32,7 @@ class AVLTree<K extends Comparable<K>, V extends Comparable<V>> {
 
     //create getHeight() method to get the height of the AVL Tree
     private int getHeight(Node<K, V> node) {
-        return node == null ? -1 : node.h;
+        return node == null ? -1 : node.getH();
     }
 
     //create maxNode() method to get the maximum height from left and right node
@@ -47,23 +47,23 @@ class AVLTree<K extends Comparable<K>, V extends Comparable<V>> {
         if (node == null)
             node = new Node<>(key, element);
             //insert a node in case when the given element is lesser than the element of the root node
-        else if (element.compareTo(node.element) < 0) {
+        else if (element.compareTo(node.getElement()) < 0) {
             node.leftChild = insertElement(key, element, node.leftChild);
             if (getHeight(node.leftChild) - getHeight(node.rightChild) == 2)
-                if (element.compareTo(node.leftChild.element) < 0)
+                if (element.compareTo(node.leftChild.getElement()) < 0)
                     node = rotateWithLeftChild(node);
                 else
                     node = doubleWithLeftChild(node);
-        } else if (element.compareTo(node.element) > 0) {
+        } else if (element.compareTo(node.getElement()) > 0) {
             node.rightChild = insertElement(key, element, node.rightChild);
             if (getHeight(node.rightChild) - getHeight(node.leftChild) == 2)
-                if (element.compareTo(node.rightChild.element) > 0)
+                if (element.compareTo(node.rightChild.getElement()) > 0)
                     node = rotateWithRightChild(node);
                 else
                     node = doubleWithRightChild(node);
         }
 
-        node.h = getMaxHeight(getHeight(node.leftChild), getHeight(node.rightChild)) + 1;
+        node.setH(getMaxHeight(getHeight(node.leftChild), getHeight(node.rightChild)) + 1);
         return node;
 
     }
@@ -73,8 +73,8 @@ class AVLTree<K extends Comparable<K>, V extends Comparable<V>> {
         Node<K, V> node1 = node2.leftChild;
         node2.leftChild = node1.rightChild;
         node1.rightChild = node2;
-        node2.h = getMaxHeight(getHeight(node2.leftChild), getHeight(node2.rightChild)) + 1;
-        node1.h = getMaxHeight(getHeight(node1.leftChild), node2.h) + 1;
+        node2.setH(getMaxHeight(getHeight(node2.leftChild), getHeight(node2.rightChild)) + 1);
+        node1.setH(getMaxHeight(getHeight(node1.leftChild), node2.getH()) + 1);
         return node1;
     }
 
@@ -83,8 +83,8 @@ class AVLTree<K extends Comparable<K>, V extends Comparable<V>> {
         Node<K, V> node2 = node1.rightChild;
         node1.rightChild = node2.leftChild;
         node2.leftChild = node1;
-        node1.h = getMaxHeight(getHeight(node1.leftChild), getHeight(node1.rightChild)) + 1;
-        node2.h = getMaxHeight(getHeight(node2.rightChild), node1.h) + 1;
+        node1.setH(getMaxHeight(getHeight(node1.leftChild), getHeight(node1.rightChild)) + 1);
+        node2.setH(getMaxHeight(getHeight(node2.rightChild), node1.getH()) + 1);
         return node2;
     }
 
@@ -126,7 +126,7 @@ class AVLTree<K extends Comparable<K>, V extends Comparable<V>> {
     }
 
     private Boolean searchByKey(Node<K, V> head, K key) {
-        K headKey = head.key;
+        K headKey = head.getKey();
         if (head == null) {
             return false;
         }
@@ -139,18 +139,16 @@ class AVLTree<K extends Comparable<K>, V extends Comparable<V>> {
     }
 
     private boolean searchElement(Node<K, V> head, V element) {
-        V headElement = head.element;
+        V headElement = head.getElement();
         if (head == null) {
             return false;
         }
         if (element.compareTo(headElement) < 0) {
             head = head.leftChild;
-            return searchElement(head.leftChild,element);
-        }
-        else if (element.compareTo(headElement) > 0) {
+            return searchElement(head.leftChild, element);
+        } else if (element.compareTo(headElement) > 0) {
             return searchElement(head.rightChild, element);
-        }
-        else
+        } else
             return true;
     }
 
@@ -163,7 +161,7 @@ class AVLTree<K extends Comparable<K>, V extends Comparable<V>> {
     private void inorderTraversal(Node<K, V> head) {
         if (head != null) {
             inorderTraversal(head.leftChild);
-            System.out.print(head.element + " ");
+            System.out.print(head.getElement() + " ");
             inorderTraversal(head.rightChild);
         }
     }
@@ -175,7 +173,7 @@ class AVLTree<K extends Comparable<K>, V extends Comparable<V>> {
 
     private void preorderTraversal(Node<K, V> head) {
         if (head != null) {
-            System.out.print(head.element + " ");
+            System.out.print(head.getElement() + " ");
             preorderTraversal(head.leftChild);
             preorderTraversal(head.rightChild);
         }
@@ -190,7 +188,7 @@ class AVLTree<K extends Comparable<K>, V extends Comparable<V>> {
         if (head != null) {
             postorderTraversal(head.leftChild);
             postorderTraversal(head.rightChild);
-            System.out.print(head.element + " ");
+            System.out.print(head.getElement() + " ");
         }
     }
 }

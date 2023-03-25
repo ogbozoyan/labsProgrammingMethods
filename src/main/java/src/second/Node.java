@@ -8,9 +8,9 @@ import lombok.Data;
  */
 @Data
 public class Node<K extends Comparable<K>,V extends Comparable<V>> {
-    K key;
-    V element;
-    int h;  //for height
+    private K key;
+    private V element;
+    private int h;  //for height
     Node<K,V> leftChild;
     Node<K,V> rightChild;
 
