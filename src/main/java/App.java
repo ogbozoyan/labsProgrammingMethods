@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 public class App {
     public static void main(String[] args) {
-        System.out.print("Осталось сделать 5Б лабу");
+        System.out.print("Все сделал :)");
     }
 
 }
