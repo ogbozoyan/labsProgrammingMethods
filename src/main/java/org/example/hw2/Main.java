@@ -13,41 +13,59 @@ import java.util.Arrays;
 public class Main {
     private static final long MOD = (long) (1e9 + 7);
     private static final int K = 257;
+    private static long[] powers;
 
     public static void main(String[] args) throws IOException {
         var reader = new BufferedReader(new InputStreamReader(System.in));
         var writer = new PrintWriter(System.out);
 
         String inputString = reader.readLine();
-        int Q = toInt(reader.readLine());
 
         long[] hashes = new long[inputString.length()];
-        long[] powers = new long[inputString.length()];
+        powers = new long[inputString.length()];
+
         hashes[0] = inputString.charAt(0) - 'a' + 1;
         powers[0] = 1;
+
         for (int i = 1; i < inputString.length(); i++) {
             hashes[i] = (hashes[i - 1] * K + inputString.charAt(i) - 'a' + 1) % MOD;
             powers[i] = (powers[i - 1] * K) % MOD;
         }
-        while (Q > 0) {
-            int[] inputs = Arrays.stream(reader.readLine().split(" ")).mapToInt(Integer::parseInt).toArray();
-            if (isEqual(inputs[0], inputs[1], inputs[2], hashes, powers)) {
-                writer.println("yes");
-            } else {
-                writer.println("no");
-            }
-            Q--;
+
+        for (int i: zetFunction(hashes,inputString)) {
+            writer.print(String.valueOf(i)+' ');
         }
 
+        writer.close();
+        reader.close();
     }
 
-    public static boolean isEqual(int length, int from1, int from2, long[] hashes, long[] powers) {
-        return getHash(from1, length, hashes, powers) == getHash(from2, length, hashes, powers);
+    public static int[] zetFunction(long[] hashes, String inputString) {
+        int n = inputString.length();
+        int[] z = new int[n];
+        for (int i = 0; i < n; i++) {
+            int left = 1, right = n - i;
+            while (left <= right) {
+                int middle = (left + right) / 2;
+                if (getHash(hashes, 0, middle - 1) == getHash(hashes, i, i + middle - 1)) {
+                    z[i] = middle;
+                    left = middle + 1;
+                } else {
+                    right = middle - 1;
+                }
+            }
+        }
+        z[0] = 0;
+        return z;
+    }
+
+    public static long getHash(long[] h, int l, int to) {
+        return getHash(l,to-l+1,h,powers);
     }
 
     /**
      * return polynomial substring hash
-     * */
+     */
     public static long getHash(int from, int subStrLen, long[] hashes, long[] powers) {
         int to = from + subStrLen - 1;
         long res = hashes[to];
@@ -58,6 +76,10 @@ public class Main {
             }
         }
         return res;
+    }
+
+    public static boolean isEqual(int length, int from1, int from2, long[] hashes, long[] powers) {
+        return getHash(from1, length, hashes, powers) == getHash(from2, length, hashes, powers);
     }
 
     private static int toInt(String str) {
