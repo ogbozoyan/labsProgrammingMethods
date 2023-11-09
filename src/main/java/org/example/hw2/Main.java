@@ -32,12 +32,40 @@ public class Main {
             powers[i] = (powers[i - 1] * K) % MOD;
         }
 
-        for (int i: zetFunction(hashes,inputString)) {
-            writer.print(String.valueOf(i)+' ');
-        }
 
         writer.close();
         reader.close();
+    }
+
+
+
+    public static int findStringBase(long[] hashes, String str) {
+        int n = str.length();
+        int b = (n / 2) + 1;
+
+
+        int k = 1;
+        for (int i = 0; i < b; i++) {
+
+        }
+
+
+        return k;
+    }
+
+    public static int[] prefixFunction(long[] hashes, String inputString) {
+        int n = inputString.length();
+        int[] pi = new int[n];
+
+        for (int i = 1; i < n; ++i) {
+            int j = pi[i - 1];
+            while (j > 0 && getHash(hashes, i, i) != getHash(hashes, j, j))
+                j = pi[j - 1];
+            if (getHash(hashes, i, i) == getHash(hashes, j, j)) ++j;
+            pi[i] = j;
+        }
+
+        return pi;
     }
 
     public static int[] zetFunction(long[] hashes, String inputString) {
@@ -60,7 +88,7 @@ public class Main {
     }
 
     public static long getHash(long[] h, int l, int to) {
-        return getHash(l,to-l+1,h,powers);
+        return getHash(l, to - l + 1, h, powers);
     }
 
     /**
