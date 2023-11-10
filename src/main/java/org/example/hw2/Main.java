@@ -22,20 +22,42 @@ public class Main {
         long[] hashes = new long[inputString.length()];
         powers = new long[inputString.length()];
 
-        hashes[0] = inputString.charAt(0) - 'a' + 1;
-        powers[0] = 1;
+        writer.println(findPalindromeCount(inputString));
+//        hashes[0] = inputString.charAt(0) - 'a' + 1;
+//        powers[0] = 1;
+//
+//        for (int i = 1; i < inputString.length(); i++) {
+//            hashes[i] = (hashes[i - 1] * K + inputString.charAt(i) - 'a' + 1) % MOD;
+//            powers[i] = (powers[i - 1] * K) % MOD;
+//        }
 
-        for (int i = 1; i < inputString.length(); i++) {
-            hashes[i] = (hashes[i - 1] * K + inputString.charAt(i) - 'a' + 1) % MOD;
-            powers[i] = (powers[i - 1] * K) % MOD;
-        }
-
-        writer.println(findStringBase(hashes));
 
         writer.close();
         reader.close();
     }
 
+
+    public static int findPalindromeCount(String s) { //алгоритма Манакера
+        int count = 0;
+        if (s == null || s.isEmpty()) return 0;
+
+        for (int i = 0; i < s.length(); i++) {
+            count += extendPalindrome(s, i, i);
+            count += extendPalindrome(s, i, i + 1);
+        }
+
+        return count;
+    }
+
+    private static int extendPalindrome(String s, int left, int right) {
+        int count = 0;
+        while (left >= 0 && right < s.length() && s.charAt(left) == s.charAt(right)) {
+            count++;
+            left--;
+            right++;
+        }
+        return count;
+    }
 
     public static int findStringBase(long[] hashes) {
         int n = hashes.length;
@@ -86,6 +108,15 @@ public class Main {
 
     public static long getHash(long[] h, int l, int to) {
         return getHash(l, to - l + 1, h, powers);
+    }
+
+    public static long getHashFromStr(String s) {
+        int sHash = 0, sPow = 1;
+        for (char c : s.toCharArray()) {
+            sHash = sHash * K + c;
+            sPow *= K;
+        }
+        return sHash;
     }
 
     /**
