@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.util.Arrays;
 
 /**
  * @author ogbozoyan
@@ -20,7 +19,6 @@ public class Main {
         var writer = new PrintWriter(System.out);
 
         String inputString = reader.readLine();
-
         long[] hashes = new long[inputString.length()];
         powers = new long[inputString.length()];
 
@@ -32,25 +30,24 @@ public class Main {
             powers[i] = (powers[i - 1] * K) % MOD;
         }
 
+        writer.println(findStringBase(hashes));
 
         writer.close();
         reader.close();
     }
 
 
+    public static int findStringBase(long[] hashes) {
+        int n = hashes.length;
 
-    public static int findStringBase(long[] hashes, String str) {
-        int n = str.length();
-        int b = (n / 2) + 1;
-
-
-        int k = 1;
-        for (int i = 0; i < b; i++) {
-
+        for (int k = 1; k < n; ++k) {
+            long prefix = getHash(0, n - k, hashes, powers);
+            long suffix = getHash(k, n - k, hashes, powers);
+            if (prefix == suffix) {
+                return k;
+            }
         }
-
-
-        return k;
+        return n;
     }
 
     public static int[] prefixFunction(long[] hashes, String inputString) {
