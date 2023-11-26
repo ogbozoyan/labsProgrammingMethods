@@ -17,20 +17,25 @@ public class Main {
         var reader = new BufferedReader(new InputStreamReader(System.in));
         var writer = new PrintWriter(System.out);
         //init
+
         String[] firstLine = reader.readLine().split(spaceSplit);
 
-        int n = Integer.parseInt(firstLine[0]);
-        String from = firstLine[1];
-        String to = firstLine[2];
+        int N = Integer.parseInt(firstLine[0]);
+        int K = Integer.parseInt(firstLine[1]);
 
-        List<List<String>> identMatrix = new ArrayList<>();
-        for (int i = 0; i < n; i++) {
-            identMatrix.add(List.of(reader.readLine().split(spaceSplit)));
+        ArrayList<String> listEdges = new ArrayList<>();
+        for (int i = 0; i < K; i++) {
+            listEdges.add(reader.readLine());
         }
-        Graph graph = new Graph(identMatrix);
+
+        String[] lastLine = reader.readLine().split(spaceSplit);
+        String from = lastLine[0];
+        String to = lastLine[1];
+
+        Graph graph = new Graph(listEdges);
         //end init
 
-        String dijkstra = graph.getDijkstraPath(from, to);
+        int dijkstra = graph.getDijkstra(from, to);
 
         System.out.println(dijkstra);
 
@@ -42,6 +47,27 @@ public class Main {
         private final HashMap<String, HashMap<String, Integer>> graph;
         private final Set<String> vertexes;
 
+
+        public Graph(ArrayList<String> listEdges) {
+            graph = new HashMap<>();
+            for (String listEdge : listEdges) {
+                String[] s = listEdge.split(" ");
+
+                String key = s[0];
+                String key1 = s[1];
+                int value = Integer.parseInt(s[2]);
+
+                // For first vertex of the edge
+                graph.putIfAbsent(key, new HashMap<>());
+                graph.get(key).put(key1, value);
+
+                // For second vertex of the edge
+                graph.putIfAbsent(key1, new HashMap<>());
+                graph.get(key1).put(key, value);
+            }
+            vertexes = graph.keySet();
+
+        }
 
         public Graph(List<List<String>> identMatrix) {
             graph = new HashMap<>();
@@ -68,13 +94,13 @@ public class Main {
         }
 
         public int getDijkstra(String from, String to) {
-
+            if(!graph.containsKey(from)){
+                return -1;
+            }
+//            PriorityQueue<iPair> pq = new PriorityQueue<>(V, Comparator.comparingInt(o -> o.first));
             HashMap<String, Integer> costsHashMap = initBuildCosts(from);
             HashMap<String, String> parentsHashMap = initBuildParents(from);
 
-//            if (from.equals(to)) {
-//                return costsHashMap.get(from);
-//            }
             List<String> visited = new ArrayList<>();
             visited.add(from);
 
