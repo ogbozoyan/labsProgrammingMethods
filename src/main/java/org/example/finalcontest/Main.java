@@ -4,7 +4,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.util.TreeSet;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author ogbozoyan
@@ -15,37 +17,58 @@ public class Main {
     public static void main(String[] args) throws IOException {
         var reader = new BufferedReader(new InputStreamReader(System.in));
         var writer = new PrintWriter(System.out);
-        int sizeAndIndex = Integer.parseInt(reader.readLine());
+        String[] s = reader.readLine().split(" ");
+        String[] s2 = reader.readLine().split(" ");
 
-        TreeSet<Long> res = new TreeSet<>();
+        int n = Integer.parseInt(s[0]);
+        int m = Integer.parseInt(s[1]);
 
-        for (int a = 1; a < sizeAndIndex; a++) {
-            long scPow = (long) a * a;
-            long trPow = scPow * a;
-            res.add(scPow);
-            res.add(trPow);
+        int[] bricks = new int[m * 2];
+
+        int j = 0;
+        for (int i = 0; i <= m; i += 2) {
+            bricks[i] = Integer.parseInt(s2[j]);
+            bricks[i + 1] = Integer.parseInt(s2[j]);
+            j++;
         }
-        if (sizeAndIndex == 1) {
-            writer.print(1);
 
-        } else if (sizeAndIndex == 2) {
-            writer.print(4);
+        int split = Arrays.stream(bricks).max().getAsInt() / 2;
 
-        } else if (sizeAndIndex > 10_000_000) {
-            writer.print(1);
-        } else {
-            int count = 0;
-            long result = 0;
-            for (long value : res) {
-                if (++count == sizeAndIndex) {
-                    result = value;
-                    break;
-                }
-            }
-            writer.print(result);
+        List<List<Integer>> combinations = findCombinations(bricks, split, Integer.parseInt(s[0]));
+
+        if (combinations.isEmpty()) {
+            writer.write("-1");
         }
         reader.close();
         writer.close();
+    }
+
+    public static List<List<Integer>> findCombinations(int[] array, int splitBrick, int borderSum) {
+        List<List<Integer>> result = new ArrayList<>();
+        Arrays.sort(array);
+        findCombinationsHelper(array, splitBrick, borderSum, 0, new ArrayList<>(), result);
+        return result;
+    }
+
+    private static void findCombinationsHelper(int[] array, int splitBrick, int remainingSum,
+                                               int start, List<Integer> currentCombination, List<List<Integer>> result) {
+        if (remainingSum == 0 && currentCombination.contains(splitBrick)) {
+            result.add(new ArrayList<>(currentCombination));
+            return;
+        }
+
+        for (int i = start; i < array.length; i++) {
+            if (i > start && array[i] == array[i - 1]) {
+                // Skip duplicates to avoid duplicate combinations
+                continue;
+            }
+
+            if (array[i] <= remainingSum) {
+                currentCombination.add(array[i]);
+                findCombinationsHelper(array, splitBrick, remainingSum - array[i], i + 1, currentCombination, result);
+                currentCombination.remove(currentCombination.size() - 1);
+            }
+        }
     }
 
 }
