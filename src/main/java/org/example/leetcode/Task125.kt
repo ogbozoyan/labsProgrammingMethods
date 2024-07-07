@@ -34,10 +34,10 @@ fun main() {
         fun isPalindrome(s: String): Boolean {
             val lowercase: String = cleanStrInLowerCase(s)
 
-            return lowercase.equals(lowercase.reversed())
+            return lowercase == lowercase.reversed()
         }
 
         private fun cleanStrInLowerCase(s: String) = s.replace(Regex("[^a-zA-Z0-9]"), "").lowercase()
     }
-    println(Solution().isPalindrome(" "))
+    println(Solution().isPalindrome("O0O"))
 }
