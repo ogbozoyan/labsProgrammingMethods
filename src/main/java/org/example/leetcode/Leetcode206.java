@@ -21,12 +21,68 @@ public class Leetcode206 {
             this.val = val;
             this.next = next;
         }
+
+        @Override
+        public String toString() {
+            return "ListNode{" +
+                    "val=" + val +
+
+                    '}';
+        }
     }
+
+    /*
+
+             prev cur next
+              |    |    |
+                   1 -> 2 -> 3 -> 4 -> 5
+
+                    prev = cur
+                    cur.next = prev
+                    cur = next
+                    next = next.next
+
+                   prev cur next
+                   |    |    |
+                   1 <- 2 -> 3 -> 4 -> 5
+
+                       prev cur next
+                       |    |    |
+                   1 -> 2 -> 3 -> 4 -> 5
+
+
+                               prev cur next
+                               |    |    |
+                   1 -> 2  ->  3 -> 4 -> 5
+
+                                    prev cur next
+                                    |    |    |
+                   1 -> 2  ->  3 -> 4 -> 5
+                */
 
     static class Solution {
         public ListNode reverseList(ListNode head) {
-            ListNode prev = null;
 
+            if(head == null || head.next == null){
+                return head;
+            }
+
+            ListNode prev = null;
+            ListNode cur = head;
+            ListNode next = cur.next;
+
+            while (next != null) {
+                prev = cur;
+                cur.next = prev;
+                cur = next;
+                next = cur.next;
+
+                if(next == null){
+                    cur.next = prev;
+                }
+            }
+
+            return cur;
         }
     }
 
