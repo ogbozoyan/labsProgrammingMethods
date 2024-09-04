@@ -3,8 +3,14 @@ package org.example.play;
 
 public class Main {
     public static void main(String[] args) {
-        int a = 1;
-        System.out.println(fact(-2));
+        var i = new int[]{0,1};
+        try {
+            int i1 = i[3];
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            int i1 = i[3];
+        }
     }
 
     public static int fact(int n) {
