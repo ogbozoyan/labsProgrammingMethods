@@ -63,7 +63,7 @@ public class Leetcode206 {
     static class Solution {
         public ListNode reverseList(ListNode head) {
 
-            if(head == null || head.next == null){
+            if (head == null || head.next == null) {
                 return head;
             }
 
@@ -72,14 +72,16 @@ public class Leetcode206 {
             ListNode next = cur.next;
 
             while (next != null) {
-                prev = cur;
                 cur.next = prev;
+                prev = cur;
                 cur = next;
+
                 next = cur.next;
 
-                if(next == null){
+                if (next == null) {
                     cur.next = prev;
                 }
+
             }
 
             return cur;
