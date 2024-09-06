@@ -18,7 +18,7 @@ import java.util.Stack;
  * Output: ["()"]
  * <a href="https://arc.net/e/91F70AEC-58D4-493E-921E-3B2085ABC644">...</a>
  */
-public class Task22 {
+public class Leetcode22 {
     public static void main(String[] args) {
 
         class Solution {

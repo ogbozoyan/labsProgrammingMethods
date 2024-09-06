@@ -75,7 +75,7 @@ package org.example.leetcode;
   0 <= s.length <= 200
   s consists of English letters (lower-case and upper-case), digits (0-9), ' ', '+', '-', and '.'.
  */
-public class Task8 {
+public class Leetcode8 {
     class Solution {
         public int myAtoi(String s) {
             return 0;

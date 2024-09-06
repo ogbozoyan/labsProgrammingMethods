@@ -28,7 +28,7 @@ package org.example.leetcode;
  * 0 <= Node.val <= 9
  * It is guaranteed that the list represents a number that does not have leading zeros.
  */
-public class Task2 {
+public class Leetcode2 {
     public static void main(String[] args) {
 
         class Solution {
