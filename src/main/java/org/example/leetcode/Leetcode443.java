@@ -6,15 +6,36 @@ package org.example.leetcode;
  */
 public class Leetcode443 {
 
+    /*
+     * aaaaabbccc -> a5b2c3
+     * */
     static class Solution {
         public int compress(char[] chars) {
-            int cur = 0;
-            int next = cur + 1;
 
-            for (int i = 0; i < chars.length; i++) {
+            int write = 0;
+            int count = 1;
+
+            for (int i = 0; i < chars.length - 1; i++) {
+
+                if (count > 1) {
+                    chars[write] = (char) (count + '0');
+                    write++;
+                    count = 1;
+                } else {
+                    chars[write] = chars[i];
+                    write++;
+                }
+
+                if (chars[i] == chars[i + 1]) {
+                    count++;
+                }
+
+                if (i == chars.length - 1 || chars[i] != chars[i + 1]) {
+                }
 
             }
-            return 0;
+
+            return write;
         }
     }
 
