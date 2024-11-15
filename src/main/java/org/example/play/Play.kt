@@ -1,48 +1,116 @@
 package org.example.play
 
-/**
- * @author ogbozoyan
- * @since 27.07.2024
- */
-class Play(play: Boolean) {
-    constructor() : this(true)
-
-}
-
-fun foo(a: String = "a") = Unit
-class Point(val x: Double, val y: Double) {
-    constructor() : this(0.0, 0.0)
-
-    companion object {
-        fun fromPolar(angle: Double, radius: Double): Point {
-            val x = radius * Math.cos(angle)
-            val y = radius * Math.sin(angle)
-            return Point(x, y)
-        }
+fun addToMap(map: LinkedHashMap<Int, Int>, key: Int, value: Int) {
+    val valueInMap: Int? = map.get(key)
+    if (valueInMap == null) {
+        map[key] = value
+    } else if (valueInMap == value) {
+        println("ДУБЛИКАТ номер $key")
+        map[key] = valueInMap.inc()
     }
 }
 
 fun main(args: Array<String>) {
 
-    var play = Play()
-
-    
-    val list = listOf("a", "b", "c")
-
-    println(list.stream().filter { it.length < 2 }.count())
-
-    if (-1 !in 0..list.lastIndex) {
-        println("-1 is out of range")
-    }
-    if (list.size !in list.indices) {
-        println("list size is out of valid list indices range, too")
-    }
-
-    val point = Point()
-    val point2 = Point(1.3, 2.0)
-    val point3 = Point(1.3, 2.0)
-    println("${point.x}, ${point.y}")
-    println(point2)
-    println(point3)
-
+    val min = listOf(
+        333,
+        272,
+        342,
+        331,
+        296,
+        346,
+        311,
+        330,
+        335,
+        350,
+        264,
+        266,
+        298,
+        281,
+        292,
+        265,
+        285,
+        276,
+        273,
+        286,
+        341,
+        319,
+        348,
+        345,
+        287,
+        320,
+        289,
+        301,
+        268,
+        343,
+        309,
+        332,
+        336,
+        277,
+        270,
+        308,
+        275,
+        267,
+        305,
+        340,
+        278,
+        307,
+        269,
+        299,
+        338,
+        306,
+        334,
+        265,
+        324,
+        288,
+        325,
+        329,
+        303,
+        324,
+        271,
+        290,
+        279,
+        302,
+        283,
+        274,
+        328,
+        304,
+        323,
+        295,
+        337,
+        315,
+        314,
+        344,
+        310,
+        300,
+        276,
+        297,
+        312,
+        293,
+        322,
+        321,
+        339,
+        313,
+        349,
+        284,
+        282,
+        326,
+        318,
+        316,
+        291,
+        280,
+        327
+    ).sorted().min()
+    println(min)
+//    val t = LinkedHashMap<Int, Int>()
+//
+//    while (true) {
+//        val numberPayment = readln().toInt()
+//        if (numberPayment == 0) {
+//            break
+//        }
+//        addToMap(t, numberPayment, 1)
+//        println(t.toString())
+//    }
+//    println("листы $t.toString(), количество листов ${t.size}")
 }
